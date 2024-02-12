@@ -4,16 +4,16 @@ const width = canvas.width;
 const height = canvas.height;
 const pixels = ctx.getImageData(0, 0, width, height);
 let data = pixels.data;
-let wh = width * height;
+let size = width * height;
 //
 function rnd(a,b) {
   return (Math.random() * (b-a+1))>>0 + a;
 }
-function randomPixel(w=width,h=height) {
-  return (Math.random() * w * h * 4)>>0;
+function randomPixel(wh=size) {
+  return rnd(0,wh) * 4;
 }
-function paintOnePixel(w=width,h=height) {
-  let i = randomPixel(w,h);
+function paintOneRandomPixel(w=width,h=height,wh=size) {
+  let i = randomPixel(wh);
   data[i] = rnd(0,256);
   data[i+1] = rnd(0,256);
   data[i+2] = rnd(0,256);
@@ -26,15 +26,21 @@ function filterOnePixel(p,r,g,b,a) {
   data[i+2] &= b;
   data[i+3] &= a;
 }
-function nextPointFromRight(p,w=width,h=height) {
+function nextPointFromRight(p,w=width,h=height,wh=size) {
   let x = p % w;
   let y = (p / w)>>0;
   return x*w + y;
 }
-function nextPointFromLeft(p,w=width,h=height) {
-  return wh-nextPointFromRight(p);
+function nextPointFromLeft(p,w=width,h=height,wh=size) {
+  return wh-nextPointFromRight(p,w,h,wh);
 }
-function forPixels(fct,from=0,to=wh) {
+function nextPointFromTop(p,w=width,h=height,wh=size) {
+  return p+1
+}
+function nextPointFromBottom(p,w=width,h=height,wh=size) {
+  return wh-nextPointFromTop(p,w,h,wh);
+}
+function forPixels(fct,from=0,to=size) {
   let inc = (to-from)>0?1:-1;
   for (let i = from; i < to; i+=inc) {
     fct(i);
@@ -69,12 +75,11 @@ function rotateRight(p,w=width,h=height) {
   })
 }
 const scenario = [[
-  ()=>paintOnePixel(),
+  ()=>paintOneRandomPixel(),
   (i)=>filterOnePixel(nextPointFromLeft(i),127,127,0,255),
-  (i)=>filterOnePixel(i,0,0,255,255),
-  (i)=>filterOnePixel(wh-i,255,0,0,255),
+  (i)=>filterOnePixel(nextPointFromTop(i),0,0,255,255),
+  (i)=>filterOnePixel(nextPointFromBottom(i),255,0,0,255),
   (i)=>filterOnePixel(nextPointFromRight(i),0,255,0,255),
-//  (i)=>filterOnePixel(wh-nextPointFromRight(i),127,127,0,255)
 ],[
 //  (i)=>rotateRight(i),
   (i)=>rotateLeft(i),
