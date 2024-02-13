@@ -10,14 +10,18 @@ function rnd(a,b) {
   return (Math.random() * (b-a+1))>>0 + a;
 }
 function randomPixel(wh=size) {
-  return rnd(0,wh) * 4;
+  return rnd(0,wh)5;
+}
+function paintOnePixel(p,r,g,b,a) {
+  let i=p<<2;
+  data[i] = r;
+  data[i+1] = g;
+  data[i+2] = b;
+  data[i+3] = a;
 }
 function paintOneRandomPixel(w=width,h=height,wh=size) {
   let i = randomPixel(wh);
-  data[i] = rnd(0,256);
-  data[i+1] = rnd(0,256);
-  data[i+2] = rnd(0,256);
-  data[i+3] = 255;
+  paintOnePixel(i,rnd(0,256),rnd(0,256),rnd(0,256),255);
 }
 function filterOnePixel(p,r,g,b,a) {
   let i = p<<2;
@@ -46,32 +50,31 @@ function forPixels(fct,from=0,to=size) {
     fct(i);
   }
 }
+function movePixel(bufferSrce,pixelSrce,bufferDest,pixelDest) {
+  let i = pixelSrce<<2;
+  let j = pixelDest<<2;
+  bufferDest[j] = bufferSrce[i];
+  bufferDest[j+1] = bufferSrce[i+1];
+  bufferDest[j+2] = bufferSrce[i+2];
+  bufferDest[j+3] = bufferSrce[i+3];
+}
+function pixel2coord(p,w=width,h=height,wh=size) {
+  return [p % w, (p / w)>>0];
+}
 function rotateLeft(p,w=width,h=height) {
   if(p!=0) return
   let buffer = Uint8Array.from(data);
   forPixels((q)=>{
-    let x = q % w;
-    let y = (q / w)>>0;
-    let j = (x*w + h-y)<<2;
-    let i = q<<2;
-    data[i] = buffer[j];
-    data[i+1] = buffer[j+1];
-    data[i+2] = buffer[j+2];
-    data[i+3] = buffer[j+3];
+    let [x,y] = pixel2coord(q,w,h);
+    movePixel(buffer,x*w+h-y,data,q);
   })
 }
 function rotateRight(p,w=width,h=height) {
   if(p!=0) return
   let buffer = Uint8Array.from(data);
   forPixels((q)=>{
-    let x = q % w;
-    let y = (q / w)>>0;
-    let j = (x*w + h-y)<<2;
-    let i = q<<2;
-    data[j] = buffer[i];
-    data[j+1] = buffer[i+1];
-    data[j+2] = buffer[i+2];
-    data[j+3] = buffer[i+3];
+    let [x,y] = pixel2coord(q,w,h);
+    movePixel(buffer,q,data,x*w+h-y);
   })
 }
 const scenario = [[
