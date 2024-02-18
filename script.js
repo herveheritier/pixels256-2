@@ -10,7 +10,7 @@ function rnd(a,b) {
   return (Math.random() * (b-a+1))>>0 + a;
 }
 function randomPixel(wh=size) {
-  return rnd(0,wh)5;
+  return rnd(0,wh);
 }
 function paintOnePixel(p,r,g,b,a) {
   let i=p<<2;
