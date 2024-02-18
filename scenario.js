@@ -20,7 +20,7 @@ function buildScenarioFromBricksList(bricksList) {
   return newScenario
 }
 //
-  function updateScenerio() {
+  function updateScenario() {
     scenario = buildScenarioFromBricksList(getBricksList());
   }
 //

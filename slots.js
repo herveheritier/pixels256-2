@@ -8,37 +8,57 @@ addSlotBtn.addEventListener("click", (e) => {
   slots.appendChild(createSlot());
 });
 //
-function createSlot() {
-  const slot = document.createElement("div");
-  slot.classList.add("slot");
+function createSlotElt(slot) {
+  const slotElt = document.createElement("div");
+  slotElt.classList.add("slotElt");
+  slot.appendChild(slotElt);
+  return slotElt;
+}
+function createActionBtn(slotElt) {
+  const actionBtn = document.createElement("button");
+  actionBtn.innerText = document.querySelector("select[name='brick']").value;
+  actionBtn.classList.add("action");
+  slotElt.appendChild(actionBtn);
+}
+function createRemoveEltBtn(slotElt) {
+  const removeEltBtn = document.createElement("button");
+  removeEltBtn.textContent = "-";
+  removeEltBtn.addEventListener("click", (e) => {
+  slotElt.parentElement.removeChild(slotElt);
+    updateScenario();
+  })
+  slotElt.appendChild(removeEltBtn);
+}
+//
+function addEltBtnClick(slot) {
+  const slotElt = createSlotElt(slot);
+  createActionBtn(slotElt);
+  createRemoveEltBtn(slotElt);
+  updateScenario();
+}
+function createAddEltBtn(slot) {
   const addEltBtn = document.createElement("button");
   addEltBtn.textContent = "+";
   addEltBtn.addEventListener("click", (e) => {
-    const elt = document.createElement("div");
-    elt.classList.add("slotElt");
-    slot.appendChild(elt);
-    const actionBtn = document.createElement("button");
-    actionBtn.innerText = document.querySelector("select[name='brick']").value;
-    actionBtn.classList.add("action");
-    elt.appendChild(actionBtn);
-    const removeEltBtn = document.createElement("button");
-    removeEltBtn.textContent = "-";
-    removeEltBtn.addEventListener("click", (e) => {
-      slot.removeChild(elt);
-      updateScenerio();
-    })
-    elt.appendChild(removeEltBtn);
-    //
-    updateScenerio();
+    addEltBtnClick(slot);
   })
   slot.appendChild(addEltBtn);
+}
+function createRemoveSlotBtn(slot) {
   const removeSlotBtn = document.createElement("button");
   removeSlotBtn.textContent = "X";
   removeSlotBtn.addEventListener("click", (e) => {
     slot.parentElement.removeChild(slot);
-    updateScenerio();
+    updateScenario();
   })
   slot.appendChild(removeSlotBtn);
+}
+//
+function createSlot() {
+  const slot = document.createElement("div");
+  slot.classList.add("slot");
+  createAddEltBtn(slot);
+  createRemoveSlotBtn(slot);
   return slot
 }
 //
